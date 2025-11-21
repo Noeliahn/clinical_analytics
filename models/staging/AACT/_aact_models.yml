@@ -1,0 +1,144 @@
+version: 2
+
+models:
+
+  # -------------------------------------------------------------------------
+  # base_aact_design_group
+  # -------------------------------------------------------------------------
+  - name: base_aact_design_group
+    description: "Base cleaned version of AACT table design_groups."
+    columns:
+      - name: id_design_groups
+        description: "Design group identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Normalized NCT identifier (uppercase, alphanumeric)."
+        tests:
+          - not_null
+          - unique
+          - regex:
+              pattern: "^NCT[0-9]{8}$"
+
+      - name: group_type_id
+        description: "Hashed identifier of group_type."
+        tests:
+          - not_null
+
+      - name: group_type
+        description: "Group type name."
+
+      - name: title
+        description: "Group title."
+
+      - name: description
+        description: "Group description."
+
+
+  # -------------------------------------------------------------------------
+  # stg_aact_design_group
+  # -------------------------------------------------------------------------
+  - name: design_group
+    description: "Staging table for AACT design_groups."
+    columns:
+      - name: id_design_groups
+        description: "Design group ID."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Cleaned clinical trial ID."
+        tests:
+          - not_null
+          - regex:
+              pattern: "^NCT[0-9]{8}$"
+
+      - name: group_type_id
+        description: "Hashed group type ID."
+
+      - name: title
+        description: "Group title."
+
+      - name: description
+        description: "Group description."
+
+
+  # -------------------------------------------------------------------------
+  # stg_aact_group_type
+  # -------------------------------------------------------------------------
+  - name: group_type
+    description: "Distinct group types with hashed keys."
+    columns:
+      - name: group_type_id
+        description: "Hashed group type ID."
+        tests:
+          - not_null
+          - unique
+
+      - name: group_type
+        description: "Group type."
+        tests:
+          - not_null
+          - accepted_values:
+              values: ["no_group_type"]   # You can add more if needed
+
+
+  # -------------------------------------------------------------------------
+  # base_aact_design_group_interventions
+  # -------------------------------------------------------------------------
+  - name: design_group_interventions
+    description: "Base cleaned version of design_group_interventions."
+    columns:
+      - name: id_design_group_interventions
+        description: "Unique identifier for this row."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Normalized NCT identifier."
+        tests:
+          - not_null
+
+      - name: design_group_id
+        description: "FK to design_groups.id_design_groups."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('base_aact_design_group')
+              field: id_design_groups
+
+      - name: intervention_id
+        description: "FK to interventions table (when available)."
+        tests:
+          - not_null
+
+
+  # -------------------------------------------------------------------------
+  # base_aact_condition
+  # -------------------------------------------------------------------------
+  - name: conditions
+    description: "AACT condition table."
+    columns:
+      - name: id_condition
+        description: "Unique condition identifier."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Normalized clinical trial identifier."
+        tests:
+          - not_null
+          - regex:
+              pattern: "^NCT[0-9]{8}$"
+          - relationships:
+              to: ref('base_aact_design_group')
+              field: nct_id
+              severity: warn
+
+      - name: condition_name
+        description: "Lowercased condition name."
