@@ -333,3 +333,129 @@ models:
         description: "Name of the result group."
         tests:
           - not_null
+
+  # =========================================================================
+  # FACILITIES TABLES
+  # =========================================================================
+
+  # -------------------------------------------------------------------------
+  # base_aact_facilities
+  # -------------------------------------------------------------------------
+  - name: base_aact_facilities
+    description: "Base cleaned version of AACT facilities table."
+    columns:
+      - name: id_facilities
+        description: "Unique identifier for facility."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Normalized clinical trial identifier."
+        tests:
+          - not_null
+
+      - name: status_id
+        description: "Hashed identifier for facility status."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('status')
+              field: status_id
+
+      - name: status
+        description: "Facility status."
+
+      - name: name
+        description: "Facility name."
+
+      - name: country_id
+        description: "Hashed identifier for facility country."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('country')
+              field: country_id
+
+      - name: country
+        description: "Facility country."
+
+      - name: latitude
+        description: "Latitude of facility location."
+
+      - name: longitude
+        description: "Longitude of facility location."
+
+
+  # -------------------------------------------------------------------------
+  # facilities (staging)
+  # -------------------------------------------------------------------------
+  - name: facilities
+    description: "Staging table referencing normalized facility dimensions."
+    columns:
+      - name: id_facilities
+        description: "Facility ID."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Clinical trial identifier."
+        tests:
+          - not_null
+
+      - name: status_id
+        description: "FK to status dimension."
+        tests:
+          - relationships:
+              to: ref('status')
+              field: status_id
+
+      - name: country_id
+        description: "FK to country dimension."
+        tests:
+          - relationships:
+              to: ref('country')
+              field: country_id
+
+      - name: latitude
+        description: "Facility latitude."
+
+      - name: longitude
+        description: "Facility longitude."
+
+
+  # -------------------------------------------------------------------------
+  # status
+  # -------------------------------------------------------------------------
+  - name: status
+    description: "Distinct facility status values."
+    columns:
+      - name: status_id
+        description: "Hashed identifier for status."
+        tests:
+          - not_null
+          - unique
+
+      - name: status
+        description: "Status label."
+        tests:
+          - not_null
+
+
+  # -------------------------------------------------------------------------
+  # country 
+  # -------------------------------------------------------------------------
+  - name: country
+    description: "Distinct country values appearing in facilities."
+    columns:
+      - name: country_id
+        description: "Hashed identifier for country."
+        tests:
+          - not_null
+          - unique
+
+      - name: country
+        description: "Country name."
+        tests:
+          - not_null
