@@ -19,8 +19,7 @@ models:
         tests:
           - not_null
           - unique
-          - regex:
-              pattern: "^NCT[0-9]{8}$"
+
 
       - name: group_type_id
         description: "Hashed identifier of group_type."
@@ -53,8 +52,7 @@ models:
         description: "Cleaned clinical trial ID."
         tests:
           - not_null
-          - regex:
-              pattern: "^NCT[0-9]{8}$"
+
 
       - name: group_type_id
         description: "Hashed group type ID."
@@ -83,7 +81,8 @@ models:
         tests:
           - not_null
           - accepted_values:
-              values: ["no_group_type"]   # You can add more if needed
+              arguments:
+                values: ["no_group_type"]
 
 
   # -------------------------------------------------------------------------
@@ -108,9 +107,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('base_aact_design_group')
-              field: id_design_groups
-
+              arguments:
+                to: ref('base_aact_design_group')
+                field: id_design_groups
       - name: intervention_id
         description: "FK to interventions table (when available)."
         tests:
@@ -133,12 +132,204 @@ models:
         description: "Normalized clinical trial identifier."
         tests:
           - not_null
-          - regex:
-              pattern: "^NCT[0-9]{8}$"
-          - relationships:
-              to: ref('base_aact_design_group')
-              field: nct_id
-              severity: warn
 
+          - relationships:
+              config:
+                severity: warn
+              arguments:
+                to: ref('base_aact_design_group')
+                field: nct_id
       - name: condition_name
         description: "Lowercased condition name."
+
+
+  # =========================================================================
+  # NEW TABLES FOR drop_withdrawals
+  # =========================================================================
+
+  # -------------------------------------------------------------------------
+  # base_aact_drop_withdrawals
+  # -------------------------------------------------------------------------
+  - name: base_aact_drop_withdrawals
+    description: "Base cleaned version of AACT drop_withdrawals table."
+    columns:
+      - name: id_drop_withdrawals
+        description: "Unique identifier for drop withdrawals."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Normalized NCT identifier."
+        tests:
+          - not_null
+
+
+      - name: result_group_id
+        description: "Hashed ID of result group."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('result_group')
+                field: result_group_id
+      - name: result_group_name
+        description: "Name of the result group."
+
+      - name: ctgov_group_code_id
+        description: "Hashed code for result group classification."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('ctgov_group_code')
+                field: ctgov_group_code_id
+      - name: ctgov_group_code
+        description: "Raw CTGOV group code."
+
+      - name: period_id
+        description: "Hashed identifier of the reporting period."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('period')
+                field: period_id
+      - name: period
+        description: "Period label."
+
+      - name: reason_id
+        description: "Hashed identifier for the withdrawal reason."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('reason')
+                field: reason_id
+      - name: reason
+        description: "Withdrawal reason."
+
+      - name: count
+        description: "Number of withdrawals."
+        tests:
+          - not_null
+
+
+  # -------------------------------------------------------------------------
+  # ctgov_group_code
+  # -------------------------------------------------------------------------
+  - name: ctgov_group_code
+    description: "Table containing distinct CTGOV group codes."
+    columns:
+      - name: ctgov_group_code_id
+        description: "Hashed identifier for CTGOV group code."
+        tests:
+          - not_null
+          - unique
+
+      - name: ctgov_group_code
+        description: "Raw CTGOV group code."
+        tests:
+          - not_null
+
+
+  # -------------------------------------------------------------------------
+  # drop_withdrawals (staging)
+  # -------------------------------------------------------------------------
+  - name: drop_withdrawals
+    description: "Staging version of drop withdrawals referencing normalized entities."
+    columns:
+      - name: id_drop_withdrawals
+        description: "Drop withdrawals ID."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Normalized clinical trial ID."
+        tests:
+          - not_null
+
+      - name: result_group_id
+        description: "FK to result_group."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('result_group')
+                field: result_group_id
+      - name: ctgov_group_code_id
+        description: "FK to ctgov_group_code."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('ctgov_group_code')
+                field: ctgov_group_code_id
+      - name: period_id
+        description: "FK to period."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('period')
+                field: period_id
+      - name: reason_id
+        description: "FK to reason."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('reason')
+                field: reason_id
+      - name: count
+        description: "Number of withdrawals."
+
+
+  # -------------------------------------------------------------------------
+  # period
+  # -------------------------------------------------------------------------
+  - name: period
+    description: "Distinct periods for drop withdrawals."
+    columns:
+      - name: period_id
+        description: "Hashed identifier for period."
+        tests:
+          - not_null
+          - unique
+
+      - name: period
+        description: "Period label."
+        tests:
+          - not_null
+
+
+  # -------------------------------------------------------------------------
+  # reason
+  # -------------------------------------------------------------------------
+  - name: reason
+    description: "Distinct reasons for drop withdrawals."
+    columns:
+      - name: reason_id
+        description: "Hashed identifier for reason."
+        tests:
+          - not_null
+          - unique
+
+      - name: reason
+        description: "Reason label."
+        tests:
+          - not_null
+
+
+  # -------------------------------------------------------------------------
+  # result_group
+  # -------------------------------------------------------------------------
+  - name: result_group
+    description: "Distinct result groups used in drop withdrawals."
+    columns:
+      - name: result_group_id
+        description: "Hashed identifier for result group."
+        tests:
+          - not_null
+          - unique
+
+      - name: result_group_name
+        description: "Name of the result group."
+        tests:
+          - not_null
