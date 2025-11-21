@@ -1,0 +1,215 @@
+version: 2
+
+models:
+
+  # ------------------------------------------------------------
+  # TABLE: gender
+  # ------------------------------------------------------------
+  - name: gender
+    description: >
+      Table containing distinct gender values extracted from SEER.
+      Includes a fallback 'no_gender' record.
+    columns:
+      - name: gender_id
+        description: MD5 hash derived from the gender value.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: gender
+        description: Raw gender value from SEER.
+        data_type: string
+
+  # ------------------------------------------------------------
+  # TABLE: primary_site
+  # ------------------------------------------------------------
+  - name: primary_site
+    description: >
+      Table containing distinct primary tumor site values.
+      Includes a fallback 'no_primary_site' record.
+    columns:
+      - name: primary_site_id
+        description: MD5 hash derived from primary_site.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: primary_site
+        description: Tumor primary site value.
+        data_type: string
+
+  # ------------------------------------------------------------
+  # TABLE: vital_status
+  # ------------------------------------------------------------
+  - name: vital_status
+    description: >
+      Table containing distinct vital status values.
+      Includes a fallback 'no_vital_status' record.
+    columns:
+      - name: vital_status_id
+        description: MD5 hash from vital_status.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: vital_status
+        description: Vital status text.
+        data_type: string
+
+  # ------------------------------------------------------------
+  # TABLE: cause_of_death
+  # ------------------------------------------------------------
+  - name: cause_of_death
+    description: >
+      Table containing distinct cause of death values.
+      Includes a fallback 'no_cause_of_death' record.
+    columns:
+      - name: cause_of_death_id
+        description: MD5 hash from cause_of_death.
+        data_type: string
+        tests:
+          - not_null
+          - unique
+
+      - name: cause_of_death
+        description: Cause of death text.
+        data_type: string
+
+  # ------------------------------------------------------------
+  # TABLE: patient
+  # ------------------------------------------------------------
+  - name: patient
+    description: >
+      Main relational patient table.   Includes standardized fields and foreign keys to reference tables.
+    columns:
+
+      - name: gender
+        description: Gender text.
+        data_type: string
+
+      - name: year_of_diagnosis
+        description: Year in which the patient was diagnosed.
+        data_type: integer
+
+      - name: primary_site
+        description: Primary tumor site.
+        data_type: string
+
+      - name: cause_of_death
+        description: Cause of death value.
+        data_type: string
+
+      - name: survival_months
+        description: Survival time in months.
+        data_type: integer
+
+      - name: vital_status
+        description: Vital status of the patient.
+        data_type: string
+
+      - name: patient_id
+        description: Unique patient identifier.
+        data_type: integer
+        tests:
+          - not_null
+
+      - name: age_recode
+        description: Age recode category.
+        data_type: string
+
+      - name: ingestion_date
+        description: Timestamp when the record was ingested.
+        data_type: timestamp
+
+      # Foreign Keys (RELATIONAL)
+      - name: gender_id
+        description: Foreign key referencing the gender table.
+        data_type: string
+        tests:
+          - relationships:
+              arguments:
+                to: ref('gender')
+                field: gender_id
+      - name: primary_site_id
+        description: Foreign key referencing primary_site table.
+        data_type: string
+        tests:
+          - relationships:
+              arguments:
+                to: ref('primary_site')
+                field: primary_site_id
+      - name: vital_status_id
+        description: Foreign key referencing vital_status table.
+        data_type: string
+        tests:
+          - relationships:
+              arguments:
+                to: ref('vital_status')
+                field: vital_status_id
+      - name: cause_of_death_id
+        description: Foreign key referencing cause_of_death table.
+        data_type: string
+        tests:
+          - relationships:
+              arguments:
+                to: ref('cause_of_death')
+                field: cause_of_death_id
+  - name: base_seer_patient
+    description: >
+      Cleaned and standardized SEER data used as input for the relational silver models.
+    columns:
+
+      - name: gender
+        description: Gender extracted from raw SEER.
+        data_type: string
+
+      - name: gender_id
+        description: MD5 hash representing gender.
+        data_type: string
+
+      - name: year_of_diagnosis
+        description: Year of diagnosis.
+        data_type: integer
+
+      - name: primary_site
+        description: Tumor primary site.
+        data_type: string
+
+      - name: primary_site_id
+        description: MD5 hash representing primary_site.
+        data_type: string
+
+      - name: cause_of_death
+        description: Cause of death.
+        data_type: string
+
+      - name: cause_of_death_id
+        description: MD5 hash representing cause_of_death.
+        data_type: string
+
+      - name: survival_months
+        description: Survival months converted to integer.
+        data_type: integer
+
+      - name: vital_status
+        description: Vital status.
+        data_type: string
+
+      - name: vital_status_id
+        description: MD5 hash representing vital_status.
+        data_type: string
+
+      - name: patient_id
+        description: Patient ID converted to integer.
+        data_type: integer
+
+      - name: age_recode
+        description: Age recode.
+        data_type: string
+
+      - name: ingestion_date
+        description: Timestamp of ingestion.
+        data_type: timestamp

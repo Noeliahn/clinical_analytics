@@ -1,0 +1,633 @@
+version: 2
+
+sources:
+
+  - name: aact
+    description: >
+      ClinicalTrials.gov AACT dataset loaded into the bronze layer.
+      Contains metadata, interventions, outcomes, and study results.
+    database: clinical_analytics_bronze_db
+    schema: raw_data_aact
+
+    config:
+      freshness:
+        warn_after: {count: 365, period: day}
+        error_after: {count: 730, period: day}
+
+    tables:
+
+      # -------------------- conditions --------------------
+      - name: conditions
+        description: Conditions associated with each clinical study.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: string
+          - name: nct_id
+            description: ClinicalTrials.gov study identifier.
+            data_type: string
+            tests:
+              - not_null
+          - name: name
+            description: Condition name.
+            data_type: string
+          - name: downcase_name
+            description: Lowercase version of the condition name.
+            data_type: string
+
+      # -------------------- design_group_interventions --------------------
+      - name: design_group_interventions
+        description: Relationship linking design groups to interventions.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: design_group_id
+            description: ID of the associated design group.
+            data_type: string
+          - name: intervention_id
+            description: ID of the related intervention.
+            data_type: string
+
+      # -------------------- design_groups --------------------
+      - name: design_groups
+        description: Clinical trial design groups (study arms).
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: group_type
+            description: Type of group (e.g., Experimental, Placebo).
+            data_type: string
+          - name: title
+            description: Title of the group.
+            data_type: string
+          - name: description
+            description: Description of the group.
+            data_type: string
+
+      # -------------------- drop_withdrawals --------------------
+      - name: drop_withdrawals
+        description: Participant withdrawals and dropouts by group.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: result_group_id
+            description: ID of the result group.
+            data_type: string
+          - name: ctgov_group_code
+            description: ClinicalTrials.gov group code.
+            data_type: string
+          - name: period
+            description: Enrollment or study period.
+            data_type: string
+          - name: reason
+            description: Withdrawal reason.
+            data_type: string
+          - name: count
+            description: Number of participants withdrawn.
+            data_type: string
+          - name: drop_withdraw_comment
+            description: Additional comments.
+            data_type: string
+          - name: reason_comment
+            description: Reason comment.
+            data_type: string
+          - name: count_units
+            description: Units for participant counts.
+            data_type: string
+
+      # -------------------- facilities --------------------
+      - name: facilities
+        description: Facility locations where the study was conducted.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: status
+            description: Recruitment status at the facility.
+            data_type: string
+          - name: name
+            description: Facility name.
+            data_type: string
+          - name: city
+            description: City of the facility.
+            data_type: string
+          - name: state
+            description: State of the facility.
+            data_type: string
+          - name: zip
+            description: ZIP code.
+            data_type: string
+          - name: country
+            description: Country of the facility.
+            data_type: string
+          - name: latitude
+            description: Latitude coordinate.
+            data_type: string
+          - name: longitude
+            description: Longitude coordinate.
+            data_type: string
+
+      # -------------------- interventions --------------------
+      - name: interventions
+        description: Interventions used in each study.
+        columns:
+          - name: id
+            description: Internal AACT intervention ID.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: intervention_type
+            description: Type of intervention (Drug, Device, Behavioral, etc.).
+            data_type: string
+          - name: name
+            description: Name of the intervention.
+            data_type: string
+          - name: description
+            description: Detailed description of the intervention.
+            data_type: string
+
+      # -------------------- outcomes --------------------
+      - name: outcomes
+        description: Defined study outcomes (primary, secondary, etc.).
+        columns:
+          - name: id
+            description: AACT outcome ID.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: outcome_type
+            description: Type of outcome (Primary, Secondary, Other).
+            data_type: string
+          - name: title
+            description: Title of the outcome.
+            data_type: string
+          - name: description
+            description: Detailed description of the outcome.
+            data_type: string
+          - name: time_frame
+            description: Time frame over which the outcome is measured.
+            data_type: string
+          - name: population
+            description: Population included for this outcome.
+            data_type: string
+          - name: anticipated_posting_date
+            description: Anticipated posting date.
+            data_type: string
+          - name: anticipated_posting_month_year
+            description: Posting month/year.
+            data_type: string
+          - name: units
+            description: Measurement units.
+            data_type: string
+          - name: units_analyzed
+            description: Units analyzed.
+            data_type: string
+          - name: dispersion_type
+            description: Dispersion metric type.
+            data_type: string
+          - name: param_type
+            description: Parameter type (e.g., Mean, Median).
+            data_type: string
+
+      # -------------------- participants_flow --------------------
+      - name: participants_flow
+        description: Study participant recruitment, assignment, and flow.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: recruitment_details
+            description: Details on participant recruitment.
+            data_type: string
+          - name: pre_assignment_details
+            description: Pre-assignment procedures/details.
+            data_type: string
+          - name: units_analyzed
+            description: Units used for participant analysis.
+            data_type: string
+
+      # -------------------- reported_events_total --------------------
+      - name: reported_events_total
+        description: Aggregated adverse event totals at the group level.
+        columns:
+          - name: id
+            description: AACT identifier.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: ctgov_group_code
+            description: Group code.
+            data_type: string
+          - name: event_type
+            description: Type of event (serious, other).
+            data_type: string
+          - name: classification
+            description: Event category/classification.
+            data_type: string
+          - name: subjects_affected
+            description: Number of subjects affected.
+            data_type: string
+          - name: subjects_at_risk
+            description: Number of subjects at risk.
+            data_type: string
+          - name: created_at
+            description: Created timestamp.
+            data_type: string
+          - name: updated_at
+            description: Updated timestamp.
+            data_type: string
+
+      # -------------------- reported_events --------------------
+      - name: reported_events
+        description: Detailed adverse event reports for each study arm.
+        columns:
+          - name: id
+            description: Internal AACT ID.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: result_group_id
+            description: Result group the event belongs to.
+            data_type: string
+          - name: ctgov_group_code
+            description: Group code.
+            data_type: string
+          - name: time_frame
+            description: Event occurrence time frame.
+            data_type: string
+          - name: event_type
+            description: Type of adverse event.
+            data_type: string
+          - name: default_vocab
+            description: Default vocabulary used.
+            data_type: string
+          - name: default_assessment
+            description: Event assessment method.
+            data_type: string
+          - name: subjects_affected
+            description: Participants affected.
+            data_type: string
+          - name: subjects_at_risk
+            description: Participants at risk.
+            data_type: string
+          - name: description
+            description: Event description.
+            data_type: string
+          - name: event_count
+            description: Count of events.
+            data_type: string
+          - name: organ_system
+            description: Organ system involved.
+            data_type: string
+          - name: adverse_event_term
+            description: Event term.
+            data_type: string
+          - name: frequency_threshold
+            description: Reporting threshold.
+            data_type: string
+          - name: vocab
+            description: Vocabulary name.
+            data_type: string
+          - name: assessment
+            description: Assessment type.
+            data_type: string
+
+      # -------------------- sponsors --------------------
+      - name: sponsors
+        description: Sponsors for each clinical trial.
+        columns:
+          - name: id
+            description: Internal sponsor ID.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: agency_class
+            description: Sponsor agency class.
+            data_type: string
+          - name: lead_or_collaborator
+            description: Whether sponsor is lead or collaborator.
+            data_type: string
+          - name: name
+            description: Sponsor name.
+            data_type: string
+
+      # -------------------- studies --------------------
+      - name: studies
+        description: Study-level metadata including dates, titles, design, and results.
+        columns:
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+            tests:
+              - not_null
+          - name: nlm_download_date_description
+            description: NLM download date description.
+            data_type: string
+          - name: study_first_submitted_date
+            description: First submission date.
+            data_type: string
+          - name: results_first_submitted_date
+            description: First results submission date.
+            data_type: string
+          - name: disposition_first_submitted_date
+            description: First submission of disposition.
+            data_type: string
+          - name: last_update_submitted_date
+            description: Last date of submitted update.
+            data_type: string
+          - name: study_first_submitted_qc_date
+            description: First QC date.
+            data_type: string
+          - name: study_first_posted_date
+            description: First posted date.
+            data_type: string
+          - name: study_first_posted_date_type
+            description: Posted date type.
+            data_type: string
+          - name: results_first_submitted_qc_date
+            description: QC date for results.
+            data_type: string
+          - name: results_first_posted_date
+            description: First posted results date.
+            data_type: string
+          - name: results_first_posted_date_type
+            description: Type of first posted results date.
+            data_type: string
+          - name: disposition_first_submitted_qc_date
+            description: Disposition submission QC date.
+            data_type: string
+          - name: disposition_first_posted_date
+            description: First posted disposition date.
+            data_type: string
+          - name: disposition_first_posted_date_type
+            description: Type of posted disposition date.
+            data_type: string
+          - name: last_update_submitted_qc_date
+            description: Last QC submission date.
+            data_type: string
+          - name: last_update_posted_date
+            description: Last posted update date.
+            data_type: string
+          - name: last_update_posted_date_type
+            description: Type of last posted update date.
+            data_type: string
+          - name: start_month_year
+            description: Study start month/year.
+            data_type: string
+          - name: start_date_type
+            description: Start date type.
+            data_type: string
+          - name: start_date
+            description: Study start date.
+            data_type: string
+          - name: verification_month_year
+            description: Verification month/year.
+            data_type: string
+          - name: verification_date
+            description: Verification date.
+            data_type: string
+          - name: completion_month_year
+            description: Completion month/year.
+            data_type: string
+          - name: completion_date_type
+            description: Completion date type.
+            data_type: string
+          - name: completion_date
+            description: Final completion date.
+            data_type: string
+          - name: primary_completion_month_year
+            description: Primary completion month/year.
+            data_type: string
+          - name: primary_completion_date_type
+            description: Primary completion date type.
+            data_type: string
+          - name: primary_completion_date
+            description: Primary completion date.
+            data_type: string
+          - name: target_duration
+            description: Intended duration of the study.
+            data_type: string
+          - name: study_type
+            description: Type of study (Interventional, Observational).
+            data_type: string
+          - name: acronym
+            description: Study acronym.
+            data_type: string
+          - name: baseline_population
+            description: Baseline population characteristics.
+            data_type: string
+          - name: brief_title
+            description: Brief title of the study.
+            data_type: string
+          - name: official_title
+            description: Official title of the study.
+            data_type: string
+          - name: overall_status
+            description: Recruitment status.
+            data_type: string
+          - name: last_known_status
+            description: Last known participant status.
+            data_type: string
+          - name: phase
+            description: Clinical trial phase (if applicable).
+            data_type: string
+          - name: enrollment
+            description: Enrollment target.
+            data_type: string
+          - name: enrollment_type
+            description: Type of enrollment.
+            data_type: string
+          - name: source
+            description: Data source description.
+            data_type: string
+          - name: limitations_and_caveats
+            description: Study limitations.
+            data_type: string
+          - name: number_of_arms
+            description: Number of study arms.
+            data_type: string
+          - name: number_of_groups
+            description: Number of groups.
+            data_type: string
+          - name: why_stopped
+            description: Reason for stopping the study.
+            data_type: string
+          - name: has_expanded_access
+            description: Whether study provides expanded access.
+            data_type: string
+          - name: expanded_access_type_individual
+            description: Expanded access (individual).
+            data_type: string
+          - name: expanded_access_type_intermediate
+            description: Expanded access (intermediate-sized populations).
+            data_type: string
+          - name: expanded_access_type_treatment
+            description: Expanded access (treatment).
+            data_type: string
+          - name: has_dmc
+            description: Indicates if a Data Monitoring Committee exists.
+            data_type: string
+          - name: is_fda_regulated_drug
+            description: Whether FDA regulates the drug.
+            data_type: string
+          - name: is_fda_regulated_device
+            description: Whether FDA regulates the device.
+            data_type: string
+          - name: is_unapproved_device
+            description: Unapproved device status.
+            data_type: string
+          - name: is_ppsd
+            description: PPSD flag.
+            data_type: string
+          - name: is_us_export
+            description: US export flag.
+            data_type: string
+          - name: biospec_retention
+            description: Biospecimen retention plans.
+            data_type: string
+          - name: biospec_description
+            description: Description of biospecimens.
+            data_type: string
+          - name: ipd_time_frame
+            description: Individual Participant Data (IPD) time frame.
+            data_type: string
+          - name: ipd_access_criteria
+            description: Access criteria for IPD.
+            data_type: string
+          - name: ipd_url
+            description: URL for IPD access.
+            data_type: string
+          - name: plan_to_share_ipd
+            description: Plan for sharing IPD.
+            data_type: string
+          - name: plan_to_share_ipd_description
+            description: Description of IPD sharing plan.
+            data_type: string
+          - name: created_at
+            description: Record creation timestamp.
+            data_type: string
+          - name: updated_at
+            description: Last update timestamp.
+            data_type: string
+          - name: source_class
+            description: Study source class.
+            data_type: string
+          - name: delayed_posting
+            description: Posting delay flag.
+            data_type: string
+          - name: expanded_access_nctid
+            description: NCT ID for linked expanded access study.
+            data_type: string
+          - name: expanded_access_status_for_nctid
+            description: Status of linked expanded access record.
+            data_type: string
+          - name: fdaaa801_violation
+            description: FDAAA801 violation indicator.
+            data_type: string
+          - name: baseline_type_units_analyzed
+            description: Units analyzed for baseline.
+            data_type: string
+          - name: patient_registry
+            description: Patient registry indicator.
+            data_type: string
+
+      # -------------------- outcome_measurements --------------------
+      - name: outcome_measurements
+        description: Numerical and categorical measurement results for study outcomes.
+        columns:
+          - name: id
+            description: Measurement record ID.
+            data_type: string
+          - name: nct_id
+            description: Study identifier.
+            data_type: string
+          - name: outcome_id
+            description: Associated outcome ID.
+            data_type: string
+          - name: result_group_id
+            description: Result group identifier.
+            data_type: string
+          - name: ctgov_group_code
+            description: ClinicalTrials.gov group code.
+            data_type: string
+          - name: classification
+            description: Classification of the outcome measurement.
+            data_type: string
+          - name: category
+            description: Category of the measurement.
+            data_type: string
+          - name: title
+            description: Measurement title.
+            data_type: string
+          - name: description
+            description: Measurement description.
+            data_type: string
+          - name: units
+            description: Measurement units.
+            data_type: string
+          - name: param_type
+            description: Parameter type (e.g., Mean, Median).
+            data_type: string
+          - name: param_value
+            description: Parameter value (as text).
+            data_type: string
+          - name: param_value_num
+            description: Numeric parameter value.
+            data_type: string
+          - name: dispersion_type
+            description: Dispersion metric (SD, SE…).
+            data_type: string
+          - name: dispersion_value
+            description: Dispersion value (text).
+            data_type: string
+          - name: dispersion_value_num
+            description: Numeric dispersion value.
+            data_type: string
+          - name: dispersion_lower_limit
+            description: Lower confidence/dispersion limit.
+            data_type: string
+          - name: dispersion_upper_limit
+            description: Upper confidence/dispersion limit.
+            data_type: string
+          - name: explanation_of_na
+            description: Explanation for missing data.
+            data_type: string
+          - name: dispersion_upper_limit_raw
+            description: Raw upper limit value.
+            data_type: string
+          - name: dispersion_lower_limit_raw
+            description: Raw lower limit value.
+            data_type: string
+
+
+#          - name: ingestion_date
+#           data_type: timestamp_tz
+#            description: Timestamp of the last sync from source.
+#            data_tests:
+#              - not_null
+
+#        config:
+#          loaded_at_field: ingestion_date

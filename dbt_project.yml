@@ -1,8 +1,7 @@
-
 # Name your project! Project names should contain only lowercase characters
 # and underscores. A good package name should reflect your organization's
 # name or the intended use of these models
-name: 'my_new_project'
+name: 'clinical_analitics'
 version: '1.0.0'
 config-version: 2
 
@@ -18,8 +17,6 @@ test-paths: ["tests"]
 seed-paths: ["seeds"]
 macro-paths: ["macros"]
 snapshot-paths: ["snapshots"]
-
-target-path: "target"  # directory which will store compiled SQL files
 clean-targets:         # directories to be removed by `dbt clean`
   - "target"
   - "dbt_packages"
@@ -36,7 +33,31 @@ clean-targets:         # directories to be removed by `dbt clean`
 # using the `{{ config(...) }}` macro.
 
 models:
-  my_new_project:
+  +transient: false
+  clinical_analitics:
     # Applies to all files under models/example/
-    example:
-      +materialized: table
+
+    staging:
+      +materialized: view
+      +database: "clinical_analytics_bronze_db"
+      +meta:
+        raw_data_aact:
+          +schema: raw_data_aact
+        raw_data_seer:
+          +schema: raw_data_seer
+
+    +meta:
+      marts:
+        +materialized: table
+        +database: "clinical_analytics_gold_db"
+        core:
+          +schema: core
+seeds:
+  +schema: seed_data
+  +database: "clinical_analytics_bronze_db"
+snapshots:
+  +transient: false
+  +target_database: "clinical_analytics_silver_db"
+  +target_schema: snapshots
+flags:
+  require_generic_test_arguments_property: true
