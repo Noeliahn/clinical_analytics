@@ -459,3 +459,308 @@ models:
         description: "Country name."
         tests:
           - not_null
+
+
+  # -------------------------------------------------------------------------
+  # base_interventions
+  # -------------------------------------------------------------------------
+  - name: base_aact_interventions
+    description: "Base cleaned version of AACT interventions table."
+    columns:
+      - name: id_interventions
+        description: "Unique identifier for intervention."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Normalized NCT identifier."
+        tests:
+          - not_null
+
+      - name: intervention_type_id
+        description: "Hashed identifier for intervention type."
+        tests:
+          - not_null
+          - relationships:
+              to: ref('intervention_type')
+              field: intervention_type_id
+
+      - name: name
+        description: "Intervention name."
+
+      - name: description
+        description: "Intervention description."
+
+  # -------------------------------------------------------------------------
+  # intervention_type
+  # -------------------------------------------------------------------------
+  - name: intervention_type
+    description: "Distinct intervention types with hashed identifiers."
+    columns:
+      - name: intervention_type_id
+        description: "Hashed identifier for intervention type."
+        tests:
+          - not_null
+          - unique
+
+      - name: intervention_type
+        description: "Intervention type label."
+        tests:
+          - not_null
+
+   # -------------------------------------------------------------------------
+  # interventions
+  # -------------------------------------------------------------------------
+  - name: interventions
+    description: "Staging version of interventions referencing normalized dimensions."
+    columns:
+      - name: id_interventions
+        description: "Intervention ID."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Clinical trial identifier."
+        tests:
+          - not_null
+
+      - name: intervention_type_id
+        description: "FK to intervention_type table."
+        tests:
+          - relationships:
+              to: ref('intervention_type')
+              field: intervention_type_id
+
+      - name: name
+        description: "Intervention name."
+
+      - name: description
+        description: "Intervention description."
+
+   # -------------------------------------------------------------------------
+  # base_aact_reported_events_total
+  # -------------------------------------------------------------------------
+  - name: base_aact_reported_events_total
+    description: "Base cleaned version of AACT reported_events_total table."
+    columns:
+      - name: id_reported_events_total
+        description: "Unique identifier for reported events total."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Normalized NCT identifier."
+        tests:
+          - not_null
+
+      - name: ctgov_group_code_id
+        description: "Hashed identifier for CTGOV group code."
+        tests:
+          - relationships:
+              to: ref('ctgov_group_code')
+              field: ctgov_group_code_id
+
+      - name: event_type_id
+        description: "Hashed identifier for event type."
+
+      - name: classification_id
+        description: "Hashed identifier for event classification."
+
+      - name: created_at
+        description: "Record creation timestamp."
+
+      - name: updated_at
+        description: "Record update timestamp."
+
+   # -------------------------------------------------------------------------
+  # reported_events_total
+  # -------------------------------------------------------------------------
+  - name: reported_events_total
+    description: "Staging version of reported events totals referencing normalized dimensions."
+    columns:
+      - name: id_reported_events_total
+        description: "Reported events total ID."
+        tests:
+          - not_null
+          - unique
+
+      - name: nct_id
+        description: "Clinical trial identifier."
+        tests:
+          - not_null
+
+      - name: ctgov_group_code_id
+        description: "FK to ctgov_group_code."
+        tests:
+          - relationships:
+              to: ref('ctgov_group_code')
+              field: ctgov_group_code_id
+
+      - name: event_type_id
+        description: "Event type identifier."
+
+      - name: classification_id
+        description: "Event classification identifier."
+
+      - name: created_at
+        description: "Record creation timestamp."
+
+      - name: updated_at
+        description: "Record update timestamp."
+
+
+ # -----------------------------
+  # stg_event_type
+  # -----------------------------
+  - name: stg_event_type
+    description: "Staging model extracting distinct event_type values."
+    columns:
+      - name: event_type_id
+        tests:
+          - not_null
+          - unique
+      - name: event_type
+
+  # -----------------------------
+  # stg_classification
+  # -----------------------------
+  - name: stg_classification
+    description: "Staging model extracting distinct classification values."
+    columns:
+      - name: classification_id
+        tests:
+          - not_null
+          - unique
+      - name: classification
+
+  # -----------------------------
+  # stg_reported_events
+  # -----------------------------
+  - name: stg_reported_events
+    description: "Staging model referencing base_aact_reported_events."
+    columns:
+      - name: id_reported_events
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        tests:
+          - not_null
+      - name: result_group_id
+      - name: ctgov_group_code_id
+      - name: subjects_affected
+      - name: subjects_at_risk
+      - name: event_count
+      - name: organ_system_id
+      - name: adverse_event_term_id
+
+  # -----------------------------
+  # base_aact_reported_events
+  # -----------------------------
+  - name: base_aact_reported_events
+    description: "Base model sourced from aact.reported_events."
+    columns:
+      - name: id_reported_events
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        tests:
+          - not_null
+      - name: result_group_id
+      - name: ctgov_group_code_id
+      - name: ctgov_group_code
+      - name: subjects_affected
+      - name: subjects_at_risk
+      - name: event_count
+      - name: organ_system_id
+      - name: organ_system
+      - name: adverse_event_term_id
+      - name: adverse_event_term
+
+  # -----------------------------
+  # stg_organ_system
+  # -----------------------------
+  - name: stg_organ_system
+    description: "Staging model extracting distinct organ_system values."
+    columns:
+      - name: organ_system_id
+        tests:
+          - not_null
+          - unique
+      - name: organ_system
+
+  # -----------------------------
+  # stg_adverse_event_term
+  # -----------------------------
+  - name: stg_adverse_event_term
+    description: "Staging model extracting distinct adverse_event_term values."
+    columns:
+      - name: adverse_event_term_id
+        tests:
+          - not_null
+          - unique
+      - name: adverse_event_term
+
+  # -----------------------------
+  # base_aact_sponsors
+  # -----------------------------
+  - name: base_aact_sponsors
+    description: "Base model sourced from aact.sponsors."
+    columns:
+      - name: id_reported_events
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        tests:
+          - not_null
+      - name: agency_class_id
+      - name: agency_class
+      - name: lead_or_collaborator_id
+      - name: lead_or_collaborator
+      - name: name
+
+  # -----------------------------
+  # stg_sponsors
+  # -----------------------------
+  - name: stg_sponsors
+    description: "Staging model referencing base_aact_sponsors."
+    columns:
+      - name: id_reported_events
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        tests:
+          - not_null
+      - name: agency_class_id
+      - name: lead_or_collaborator_id
+      - name: name
+
+  # -----------------------------
+  # stg_agency_class
+  # -----------------------------
+  - name: stg_agency_class
+    description: "Staging model extracting distinct agency_class values."
+    columns:
+      - name: agency_class_id
+        tests:
+          - not_null
+          - unique
+      - name: agency_class
+
+  # -----------------------------
+  # stg_lead_or_collaborator
+  # -----------------------------
+  - name: stg_lead_or_collaborator
+    description: "Staging model extracting distinct lead_or_collaborator values."
+    columns:
+      - name: lead_or_collaborator_id
+        tests:
+          - not_null
+          - unique
+      - name: lead_or_collaborator
