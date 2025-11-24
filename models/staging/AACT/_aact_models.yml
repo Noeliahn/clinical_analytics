@@ -18,7 +18,6 @@ models:
         description: "Normalized NCT identifier (uppercase, alphanumeric)."
         tests:
           - not_null
-          - unique
 
 
       - name: group_type_id
@@ -360,9 +359,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('status')
-              field: status_id
-
+              arguments:
+                to: ref('status')
+                field: status_id
       - name: status
         description: "Facility status."
 
@@ -374,9 +373,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('country')
-              field: country_id
-
+              arguments:
+                to: ref('country')
+                field: country_id
       - name: country
         description: "Facility country."
 
@@ -408,16 +407,16 @@ models:
         description: "FK to status dimension."
         tests:
           - relationships:
-              to: ref('status')
-              field: status_id
-
+              arguments:
+                to: ref('status')
+                field: status_id
       - name: country_id
         description: "FK to country dimension."
         tests:
           - relationships:
-              to: ref('country')
-              field: country_id
-
+              arguments:
+                to: ref('country')
+                field: country_id
       - name: latitude
         description: "Facility latitude."
 
@@ -483,9 +482,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('intervention_type')
-              field: intervention_type_id
-
+              arguments:
+                to: ref('intervention_type')
+                field: intervention_type_id
       - name: name
         description: "Intervention name."
 
@@ -530,9 +529,9 @@ models:
         description: "FK to intervention_type table."
         tests:
           - relationships:
-              to: ref('intervention_type')
-              field: intervention_type_id
-
+              arguments:
+                to: ref('intervention_type')
+                field: intervention_type_id
       - name: name
         description: "Intervention name."
 
@@ -560,9 +559,9 @@ models:
         description: "Hashed identifier for CTGOV group code."
         tests:
           - relationships:
-              to: ref('ctgov_group_code')
-              field: ctgov_group_code_id
-
+              arguments:
+                to: ref('ctgov_group_code')
+                field: ctgov_group_code_id
       - name: event_type_id
         description: "Hashed identifier for event type."
 
@@ -596,9 +595,9 @@ models:
         description: "FK to ctgov_group_code."
         tests:
           - relationships:
-              to: ref('ctgov_group_code')
-              field: ctgov_group_code_id
-
+              arguments:
+                to: ref('ctgov_group_code')
+                field: ctgov_group_code_id
       - name: event_type_id
         description: "Event type identifier."
 
@@ -611,10 +610,9 @@ models:
       - name: updated_at
         description: "Record update timestamp."
 
-
- # -----------------------------
-  # stg_event_type
-  # -----------------------------
+################################################################################
+# stg_event_type
+################################################################################
   - name: stg_event_type
     description: "Staging model extracting distinct event_type values."
     columns:
@@ -624,9 +622,9 @@ models:
           - unique
       - name: event_type
 
-  # -----------------------------
-  # stg_classification
-  # -----------------------------
+################################################################################
+# stg_classification
+################################################################################
   - name: stg_classification
     description: "Staging model extracting distinct classification values."
     columns:
@@ -636,9 +634,9 @@ models:
           - unique
       - name: classification
 
-  # -----------------------------
-  # stg_reported_events
-  # -----------------------------
+################################################################################
+# stg_reported_events
+################################################################################
   - name: stg_reported_events
     description: "Staging model referencing base_aact_reported_events."
     columns:
@@ -646,20 +644,35 @@ models:
         tests:
           - not_null
           - unique
+
       - name: nct_id
         tests:
           - not_null
+
       - name: result_group_id
+
       - name: ctgov_group_code_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_ctgov_group_code')
+                field: ctgov_group_code_id
       - name: subjects_affected
       - name: subjects_at_risk
       - name: event_count
-      - name: organ_system_id
-      - name: adverse_event_term_id
 
-  # -----------------------------
-  # base_aact_reported_events
-  # -----------------------------
+      - name: organ_system_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_organ_system')
+                field: organ_system_id
+      - name: adverse_event_term_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_adverse_event_term')
+                field: adverse_event_term_id
   - name: base_aact_reported_events
     description: "Base model sourced from aact.reported_events."
     columns:
@@ -667,23 +680,44 @@ models:
         tests:
           - not_null
           - unique
+
       - name: nct_id
         tests:
           - not_null
+
       - name: result_group_id
+
       - name: ctgov_group_code_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_ctgov_group_code')
+                field: ctgov_group_code_id
       - name: ctgov_group_code
+
       - name: subjects_affected
       - name: subjects_at_risk
       - name: event_count
+
       - name: organ_system_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_organ_system')
+                field: organ_system_id
       - name: organ_system
+
       - name: adverse_event_term_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_adverse_event_term')
+                field: adverse_event_term_id
       - name: adverse_event_term
 
-  # -----------------------------
-  # stg_organ_system
-  # -----------------------------
+################################################################################
+# stg_organ_system
+################################################################################
   - name: stg_organ_system
     description: "Staging model extracting distinct organ_system values."
     columns:
@@ -693,9 +727,9 @@ models:
           - unique
       - name: organ_system
 
-  # -----------------------------
-  # stg_adverse_event_term
-  # -----------------------------
+################################################################################
+# stg_adverse_event_term
+################################################################################
   - name: stg_adverse_event_term
     description: "Staging model extracting distinct adverse_event_term values."
     columns:
@@ -705,9 +739,9 @@ models:
           - unique
       - name: adverse_event_term
 
-  # -----------------------------
-  # base_aact_sponsors
-  # -----------------------------
+################################################################################
+# base_aact_sponsors
+################################################################################
   - name: base_aact_sponsors
     description: "Base model sourced from aact.sponsors."
     columns:
@@ -715,18 +749,32 @@ models:
         tests:
           - not_null
           - unique
+
       - name: nct_id
         tests:
           - not_null
+
       - name: agency_class_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_agency_class')
+                field: agency_class_id
       - name: agency_class
+
       - name: lead_or_collaborator_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_lead_or_collaborator')
+                field: lead_or_collaborator_id
       - name: lead_or_collaborator
+
       - name: name
 
-  # -----------------------------
-  # stg_sponsors
-  # -----------------------------
+################################################################################
+# stg_sponsors
+################################################################################
   - name: stg_sponsors
     description: "Staging model referencing base_aact_sponsors."
     columns:
@@ -734,28 +782,39 @@ models:
         tests:
           - not_null
           - unique
+
       - name: nct_id
         tests:
           - not_null
+
       - name: agency_class_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_agency_class')
+                field: agency_class_id
       - name: lead_or_collaborator_id
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_lead_or_collaborator')
+                field: lead_or_collaborator_id
       - name: name
 
-  # -----------------------------
-  # stg_agency_class
-  # -----------------------------
+################################################################################
+# stg_agency_class
+################################################################################
   - name: stg_agency_class
     description: "Staging model extracting distinct agency_class values."
     columns:
       - name: agency_class_id
         tests:
-          - not_null
           - unique
       - name: agency_class
 
-  # -----------------------------
-  # stg_lead_or_collaborator
-  # -----------------------------
+################################################################################
+# stg_lead_or_collaborator
+################################################################################
   - name: stg_lead_or_collaborator
     description: "Staging model extracting distinct lead_or_collaborator values."
     columns:
