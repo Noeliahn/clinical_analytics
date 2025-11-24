@@ -1,0 +1,625 @@
+version: 2
+
+sources:
+
+  - name: aact
+    description: >
+      ClinicalTrials.gov AACT dataset loaded into the bronze layer.
+      Contains metadata, interventions, outcomes, and study results.
+    database: clinical_analytics_bronze_db
+    schema: raw_data_aact
+
+    config:
+      freshness:
+        warn_after: {count: 365, period: day}
+        error_after: {count: 730, period: day}
+
+    tables:
+
+      # -------------------- conditions --------------------
+      - name: conditions
+        description: Conditions associated with each clinical study.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: varchar
+            tests:
+              - not_null
+          - name: nct_id
+            description: ClinicalTrials.gov study identifier.
+            data_type: varchar
+            tests:
+              - not_null
+          - name: name
+            description: Condition name.
+            data_type: varchar
+          - name: downcase_name
+            description: Lowercase version of the condition name.
+            data_type: varchar
+
+      # -------------------- design_group_interventions --------------------
+      - name: design_group_interventions
+        description: Relationship linking design groups to interventions.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: design_group_id
+            description: ID of the associated design group.
+            data_type: varchar
+          - name: intervention_id
+            description: ID of the related intervention.
+            data_type: varchar
+
+      # -------------------- design_groups --------------------
+      - name: design_groups
+        description: Clinical trial design groups (study arms).
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: group_type
+            description: Type of group (e.g., Experimental, Placebo).
+            data_type: varchar
+          - name: title
+            description: Title of the group.
+            data_type: varchar
+          - name: description
+            description: Description of the group.
+            data_type: varchar
+
+      # -------------------- drop_withdrawals --------------------
+      - name: drop_withdrawals
+        description: Participant withdrawals and dropouts by group.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: result_group_id
+            description: ID of the result group.
+            data_type: varchar
+          - name: ctgov_group_code
+            description: ClinicalTrials.gov group code.
+            data_type: varchar
+          - name: period
+            description: Enrollment or study period.
+            data_type: varchar
+          - name: reason
+            description: Withdrawal reason.
+            data_type: varchar
+          - name: count
+            description: Number of participants withdrawn.
+            data_type: varchar
+          - name: drop_withdraw_comment
+            description: Additional comments.
+            data_type: varchar
+          - name: reason_comment
+            description: Reason comment.
+            data_type: varchar
+          - name: count_units
+            description: Units for participant counts.
+            data_type: varchar
+
+      # -------------------- facilities --------------------
+      - name: facilities
+        description: Facility locations where the study was conducted.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: status
+            description: Recruitment status at the facility.
+            data_type: varchar
+          - name: name
+            description: Facility name.
+            data_type: varchar
+          - name: city
+            description: City of the facility.
+            data_type: varchar
+          - name: state
+            description: State of the facility.
+            data_type: varchar
+          - name: zip
+            description: ZIP code.
+            data_type: varchar
+          - name: country
+            description: Country of the facility.
+            data_type: varchar
+          - name: latitude
+            description: Latitude coordinate.
+            data_type: varchar
+          - name: longitude
+            description: Longitude coordinate.
+            data_type: varchar
+
+      # -------------------- interventions --------------------
+      - name: interventions
+        description: Interventions used in each study.
+        columns:
+          - name: id
+            description: Internal AACT intervention ID.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: intervention_type
+            description: Type of intervention (Drug, Device, Behavioral, etc.).
+            data_type: varchar
+          - name: name
+            description: Name of the intervention.
+            data_type: varchar
+          - name: description
+            description: Detailed description of the intervention.
+            data_type: varchar
+
+      # -------------------- outcomes --------------------
+      - name: outcomes
+        description: Defined study outcomes (primary, secondary, etc.).
+        columns:
+          - name: id
+            description: AACT outcome ID.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: outcome_type
+            description: Type of outcome (Primary, Secondary, Other).
+            data_type: varchar
+          - name: title
+            description: Title of the outcome.
+            data_type: varchar
+          - name: description
+            description: Detailed description of the outcome.
+            data_type: varchar
+          - name: time_frame
+            description: Time frame over which the outcome is measured.
+            data_type: varchar
+          - name: population
+            description: Population included for this outcome.
+            data_type: varchar
+          - name: anticipated_posting_date
+            description: Anticipated posting date.
+            data_type: varchar
+          - name: anticipated_posting_month_year
+            description: Posting month/year.
+            data_type: varchar
+          - name: units
+            description: Measurement units.
+            data_type: varchar
+          - name: units_analyzed
+            description: Units analyzed.
+            data_type: varchar
+          - name: dispersion_type
+            description: Dispersion metric type.
+            data_type: varchar
+          - name: param_type
+            description: Parameter type (e.g., Mean, Median).
+            data_type: varchar
+
+      # -------------------- participants_flow --------------------
+      - name: participants_flow
+        description: Study participant recruitment, assignment, and flow.
+        columns:
+          - name: id
+            description: Internal AACT identifier.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: recruitment_details
+            description: Details on participant recruitment.
+            data_type: varchar
+          - name: pre_assignment_details
+            description: Pre-assignment procedures/details.
+            data_type: varchar
+          - name: units_analyzed
+            description: Units used for participant analysis.
+            data_type: varchar
+
+      # -------------------- reported_events_total --------------------
+      - name: reported_events_total
+        description: Aggregated adverse event totals at the group level.
+        columns:
+          - name: id
+            description: AACT identifier.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: ctgov_group_code
+            description: Group code.
+            data_type: varchar
+          - name: event_type
+            description: Type of event (serious, other).
+            data_type: varchar
+          - name: classification
+            description: Event category/classification.
+            data_type: varchar
+          - name: subjects_affected
+            description: Number of subjects affected.
+            data_type: varchar
+          - name: subjects_at_risk
+            description: Number of subjects at risk.
+            data_type: varchar
+          - name: created_at
+            description: Created timestamp.
+            data_type: varchar
+          - name: updated_at
+            description: Updated timestamp.
+            data_type: varchar
+
+      # -------------------- reported_events --------------------
+      - name: reported_events
+        description: Detailed adverse event reports for each study arm.
+        columns:
+          - name: id
+            description: Internal AACT ID.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: result_group_id
+            description: Result group the event belongs to.
+            data_type: varchar
+          - name: ctgov_group_code
+            description: Group code.
+            data_type: varchar
+          - name: time_frame
+            description: Event occurrence time frame.
+            data_type: varchar
+          - name: event_type
+            description: Type of adverse event.
+            data_type: varchar
+          - name: default_vocab
+            description: Default vocabulary used.
+            data_type: varchar
+          - name: default_assessment
+            description: Event assessment method.
+            data_type: varchar
+          - name: subjects_affected
+            description: Participants affected.
+            data_type: varchar
+          - name: subjects_at_risk
+            description: Participants at risk.
+            data_type: varchar
+          - name: description
+            description: Event description.
+            data_type: varchar
+          - name: event_count
+            description: Count of events.
+            data_type: varchar
+          - name: organ_system
+            description: Organ system involved.
+            data_type: varchar
+          - name: adverse_event_term
+            description: Event term.
+            data_type: varchar
+          - name: frequency_threshold
+            description: Reporting threshold.
+            data_type: varchar
+          - name: vocab
+            description: Vocabulary name.
+            data_type: varchar
+          - name: assessment
+            description: Assessment type.
+            data_type: varchar
+
+      # -------------------- sponsors --------------------
+      - name: sponsors
+        description: Sponsors for each clinical trial.
+        columns:
+          - name: id
+            description: Internal sponsor ID.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: agency_class
+            description: Sponsor agency class.
+            data_type: varchar
+          - name: lead_or_collaborator
+            description: Whether sponsor is lead or collaborator.
+            data_type: varchar
+          - name: name
+            description: Sponsor name.
+            data_type: varchar
+
+      # -------------------- studies --------------------
+      - name: studies
+        description: Study-level metadata including dates, titles, design, and results.
+        columns:
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+            tests:
+              - not_null
+          - name: nlm_download_date_description
+            description: NLM download date description.
+            data_type: varchar
+          - name: study_first_submitted_date
+            description: First submission date.
+            data_type: varchar
+          - name: results_first_submitted_date
+            description: First results submission date.
+            data_type: varchar
+          - name: disposition_first_submitted_date
+            description: First submission of disposition.
+            data_type: varchar
+          - name: last_update_submitted_date
+            description: Last date of submitted update.
+            data_type: varchar
+          - name: study_first_submitted_qc_date
+            description: First QC date.
+            data_type: varchar
+          - name: study_first_posted_date
+            description: First posted date.
+            data_type: varchar
+          - name: study_first_posted_date_type
+            description: Posted date type.
+            data_type: varchar
+          - name: results_first_submitted_qc_date
+            description: QC date for results.
+            data_type: varchar
+          - name: results_first_posted_date
+            description: First posted results date.
+            data_type: varchar
+          - name: results_first_posted_date_type
+            description: Type of first posted results date.
+            data_type: varchar
+          - name: disposition_first_submitted_qc_date
+            description: Disposition submission QC date.
+            data_type: varchar
+          - name: disposition_first_posted_date
+            description: First posted disposition date.
+            data_type: varchar
+          - name: disposition_first_posted_date_type
+            description: Type of posted disposition date.
+            data_type: varchar
+          - name: last_update_submitted_qc_date
+            description: Last QC submission date.
+            data_type: varchar
+          - name: last_update_posted_date
+            description: Last posted update date.
+            data_type: varchar
+          - name: last_update_posted_date_type
+            description: Type of last posted update date.
+            data_type: varchar
+          - name: start_month_year
+            description: Study start month/year.
+            data_type: varchar
+          - name: start_date_type
+            description: Start date type.
+            data_type: varchar
+          - name: start_date
+            description: Study start date.
+            data_type: varchar
+          - name: verification_month_year
+            description: Verification month/year.
+            data_type: varchar
+          - name: verification_date
+            description: Verification date.
+            data_type: varchar
+          - name: completion_month_year
+            description: Completion month/year.
+            data_type: varchar
+          - name: completion_date_type
+            description: Completion date type.
+            data_type: varchar
+          - name: completion_date
+            description: Final completion date.
+            data_type: varchar
+          - name: primary_completion_month_year
+            description: Primary completion month/year.
+            data_type: varchar
+          - name: primary_completion_date_type
+            description: Primary completion date type.
+            data_type: varchar
+          - name: primary_completion_date
+            description: Primary completion date.
+            data_type: varchar
+          - name: target_duration
+            description: Intended duration of the study.
+            data_type: varchar
+          - name: study_type
+            description: Type of study (Interventional, Observational).
+            data_type: varchar
+          - name: acronym
+            description: Study acronym.
+            data_type: varchar
+          - name: baseline_population
+            description: Baseline population characteristics.
+            data_type: varchar
+          - name: brief_title
+            description: Brief title of the study.
+            data_type: varchar
+          - name: official_title
+            description: Official title of the study.
+            data_type: varchar
+          - name: overall_status
+            description: Recruitment status.
+            data_type: varchar
+          - name: last_known_status
+            description: Last known participant status.
+            data_type: varchar
+          - name: phase
+            description: Clinical trial phase (if applicable).
+            data_type: varchar
+          - name: enrollment
+            description: Enrollment target.
+            data_type: varchar
+          - name: enrollment_type
+            description: Type of enrollment.
+            data_type: varchar
+          - name: source
+            description: Data source description.
+            data_type: varchar
+          - name: limitations_and_caveats
+            description: Study limitations.
+            data_type: varchar
+          - name: number_of_arms
+            description: Number of study arms.
+            data_type: varchar
+          - name: number_of_groups
+            description: Number of groups.
+            data_type: varchar
+          - name: why_stopped
+            description: Reason for stopping the study.
+            data_type: varchar
+          - name: has_expanded_access
+            description: Whether study provides expanded access.
+            data_type: varchar
+          - name: expanded_access_type_individual
+            description: Expanded access (individual).
+            data_type: varchar
+          - name: expanded_access_type_intermediate
+            description: Expanded access (intermediate-sized populations).
+            data_type: varchar
+          - name: expanded_access_type_treatment
+            description: Expanded access (treatment).
+            data_type: varchar
+          - name: has_dmc
+            description: Indicates if a Data Monitoring Committee exists.
+            data_type: varchar
+          - name: is_fda_regulated_drug
+            description: Whether FDA regulates the drug.
+            data_type: varchar
+          - name: is_fda_regulated_device
+            description: Whether FDA regulates the device.
+            data_type: varchar
+          - name: is_unapproved_device
+            description: Unapproved device status.
+            data_type: varchar
+          - name: is_ppsd
+            description: PPSD flag.
+            data_type: varchar
+          - name: is_us_export
+            description: US export flag.
+            data_type: varchar
+          - name: biospec_retention
+            description: Biospecimen retention plans.
+            data_type: varchar
+          - name: biospec_description
+            description: Description of biospecimens.
+            data_type: varchar
+          - name: ipd_time_frame
+            description: Individual Participant Data (IPD) time frame.
+            data_type: varchar
+          - name: ipd_access_criteria
+            description: Access criteria for IPD.
+            data_type: varchar
+          - name: ipd_url
+            description: URL for IPD access.
+            data_type: varchar
+          - name: plan_to_share_ipd
+            description: Plan for sharing IPD.
+            data_type: varchar
+          - name: plan_to_share_ipd_description
+            description: Description of IPD sharing plan.
+            data_type: varchar
+          - name: created_at
+            description: Record creation timestamp.
+            data_type: varchar
+          - name: updated_at
+            description: Last update timestamp.
+            data_type: varchar
+          - name: source_class
+            description: Study source class.
+            data_type: varchar
+          - name: delayed_posting
+            description: Posting delay flag.
+            data_type: varchar
+          - name: expanded_access_nctid
+            description: NCT ID for linked expanded access study.
+            data_type: varchar
+          - name: expanded_access_status_for_nctid
+            description: Status of linked expanded access record.
+            data_type: varchar
+          - name: fdaaa801_violation
+            description: FDAAA801 violation indicator.
+            data_type: varchar
+          - name: baseline_type_units_analyzed
+            description: Units analyzed for baseline.
+            data_type: varchar
+          - name: patient_registry
+            description: Patient registry indicator.
+            data_type: varchar
+
+      # -------------------- outcome_measurements --------------------
+      - name: outcome_measurements
+        description: Numerical and categorical measurement results for study outcomes.
+        columns:
+          - name: id
+            description: Measurement record ID.
+            data_type: varchar
+          - name: nct_id
+            description: Study identifier.
+            data_type: varchar
+          - name: outcome_id
+            description: Associated outcome ID.
+            data_type: varchar
+          - name: result_group_id
+            description: Result group identifier.
+            data_type: varchar
+          - name: ctgov_group_code
+            description: ClinicalTrials.gov group code.
+            data_type: varchar
+          - name: classification
+            description: Classification of the outcome measurement.
+            data_type: varchar
+          - name: category
+            description: Category of the measurement.
+            data_type: varchar
+          - name: title
+            description: Measurement title.
+            data_type: varchar
+          - name: description
+            description: Measurement description.
+            data_type: varchar
+          - name: units
+            description: Measurement units.
+            data_type: varchar
+          - name: param_type
+            description: Parameter type (e.g., Mean, Median).
+            data_type: varchar
+          - name: param_value
+            description: Parameter value (as text).
+            data_type: varchar
+          - name: param_value_num
+            description: Numeric parameter value.
+            data_type: varchar
+          - name: dispersion_type
+            description: Dispersion metric (SD, SE…).
+            data_type: varchar
+          - name: dispersion_value
+            description: Dispersion value (text).
+            data_type: varchar
+          - name: dispersion_value_num
+            description: Numeric dispersion value.
+            data_type: varchar
+          - name: dispersion_lower_limit
+            description: Lower confidence/dispersion limit.
+            data_type: varchar
+          - name: dispersion_upper_limit
+            description: Upper confidence/dispersion limit.
+            data_type: varchar
+          - name: explanation_of_na
+            description: Explanation for missing data.
+            data_type: varchar
+          - name: dispersion_upper_limit_raw
+            description: Raw upper limit value.
+            data_type: varchar
+          - name: dispersion_lower_limit_raw
+            description: Raw lower limit value.
+            data_type: varchar

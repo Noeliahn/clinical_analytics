@@ -1,0 +1,56 @@
+version: 2
+
+sources:
+
+  - name: seer
+    description: >
+      SEER cancer registry dataset loaded into the bronze layer. Contains
+      demographic, diagnostic, and survival information for oncology patients.
+    database: clinical_analytics_bronze_db
+    schema: raw_data_seer
+    
+    
+    config:
+      freshness:
+        warn_after: {count: 365, period: day}
+        error_after: {count: 730, period: day}
+
+    tables:
+      - name: seer
+        description: SEER raw file with cancer registry information.
+        columns:
+          - name: sex
+            description: Sex of the patient.
+            data_type: string
+          - name: year_of_diagnosis
+            description: Year when the cancer diagnosis occurred.
+            data_type: string
+          - name: site_recode
+            description: Cancer site recode category (SEER standard grouping).
+            data_type: string
+          - name: cause_of_death
+            description: Cause of death according to vital records.
+            data_type: string
+          - name: survival_months
+            description: Number of months the patient survived after diagnosis.
+            data_type: string
+          - name: vital_status
+            description: Vital status at last follow-up (Alive / Dead).
+            data_type: string
+          - name: patient_id
+            description: Unique SEER patient identifier.
+            data_type: string
+            tests:
+              - not_null
+          - name: age_recode
+            description: Age category at diagnosis.
+            data_type: string
+            
+          - name: ingestion_date
+            data_type: timestamp_tz
+            description: Timestamp of the last sync from source.
+            data_tests:
+              - not_null
+
+        config:
+          loaded_at_field: ingestion_date
