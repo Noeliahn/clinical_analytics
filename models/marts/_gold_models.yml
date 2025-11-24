@@ -1,0 +1,407 @@
+version: 2
+
+models:
+
+  # =========================================================================
+  # Gold - Conditions
+  # =========================================================================
+  - name: dim_condition
+    description: "Tabla gold de condiciones por estudio clínico."
+    columns:
+      - name: id_condition
+        description: "Identificador único de la condición."
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        description: "ID del estudio clínico normalizado."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+      - name: condition_name
+        description: "Nombre de la condición asociada al estudio."
+
+
+  # =========================================================================
+  # Gold - Reported Events
+  # =========================================================================
+  - name: dim_event
+    description: "Tabla gold de eventos reportados, combinando staging de AACT y dimensiones normalizadas."
+    columns:
+      - name: organ_system_id
+        description: "FK al sistema de órganos."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_organ_system')
+                field: organ_system_id
+      - name: organ_system
+        description: "Nombre del sistema de órganos."
+      - name: adverse_event_term_id
+        description: "FK al término de evento adverso."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_adverse_event_term')
+                field: adverse_event_term_id
+      - name: adverse_event_term
+        description: "Nombre del término de evento adverso."
+      - name: ctgov_group_code_id
+        description: "FK al código de grupo CTGOV."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_ctgov_group')
+                field: ctgov_group_code_id
+      - name: ctgov_group_code
+        description: "Código de grupo CTGOV."
+      - name: nct_id
+        description: "ID del estudio clínico."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+      - name: event_type_id
+        description: "FK al tipo de evento."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_event_type')
+                field: event_type_id
+      - name: event_type
+        description: "Tipo de evento."
+      - name: classification_id
+        description: "FK a la clasificación del evento."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_classification')
+                field: classification_id
+      - name: classification
+        description: "Clasificación del evento."
+
+
+  # =========================================================================
+  # Gold - Facilities
+  # =========================================================================
+  - name: dim_facility
+    description: "Tabla gold de instalaciones asociadas a estudios clínicos."
+    columns:
+      - name: id_facilities
+        description: "Identificador único de la instalación."
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        description: "ID del estudio clínico."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+      - name: status_id
+        description: "FK al estado de la instalación."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_status')
+                field: status_id
+      - name: country_id
+        description: "FK al país de la instalación."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_country')
+                field: country_id
+      - name: latitude
+        description: "Latitud de la instalación."
+      - name: longitude
+        description: "Longitud de la instalación."
+
+
+  # =========================================================================
+  # Gold - Interventions
+  # =========================================================================
+  - name: dim_intervention
+    description: "Tabla gold de intervenciones asociadas a estudios clínicos."
+    columns:
+      - name: id_interventions
+        description: "Identificador único de la intervención."
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        description: "ID del estudio clínico."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+
+      - name: intervention_type_id
+        description: "FK al tipo de intervención."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_intervention_type')
+                field: intervention_type_id
+      - name: intervention_name
+        description: "Nombre de la intervención."
+      - name: description
+        description: "Descripción de la intervención."
+
+  # =========================================================================
+  # Gold - Patient Dimension
+  # =========================================================================
+  - name: dim_patient
+    description: "Dimensión de pacientes proveniente de SEER."
+    columns:
+      - name: patient_id
+        description: "Identificador único del paciente."
+        tests:
+          - not_null
+          - unique
+      - name: gender_id
+        description: "FK al género del paciente."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_seer_gender')
+                field: gender_id
+      - name: primary_site_id
+        description: "FK al sitio primario de la enfermedad."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_seer_primary_site')
+                field: primary_site_id
+      - name: vital_status_id
+        description: "FK al estado vital del paciente."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_seer_vital_status')
+                field: vital_status_id
+      - name: cause_of_death_id
+        description: "FK a la causa de muerte si aplica."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_seer_cause_of_death')
+                field: cause_of_death_id
+      - name: age_recode
+        description: "Edad categorizada del paciente."
+      - name: year_of_diagnosis
+        description: "Año de diagnóstico."
+      - name: survival_months
+        description: "Meses de supervivencia desde el diagnóstico."
+      - name: ingestion_date
+        description: "Fecha de carga de los datos."
+
+
+  # =========================================================================
+  # Gold - Sponsors
+  # =========================================================================
+  - name: dim_sponsor
+    description: "Tabla gold de patrocinadores de los estudios."
+    columns:
+      - name: sponsor_row_id
+        description: "ID de la fila del patrocinador."
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        description: "ID del estudio clínico."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+      - name: agency_class_id
+        description: "FK a la clase de agencia."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_agency_class')
+                field: agency_class_id
+      - name: agency_class
+        description: "Nombre de la clase de agencia."
+      - name: lead_or_collaborator_id
+        description: "FK al lead o colaborador."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_lead_or_collaborator')
+                field: lead_or_collaborator_id
+      - name: lead_or_collaborator
+        description: "Nombre del lead o colaborador."
+      - name: sponsor_name
+        description: "Nombre del patrocinador."
+
+
+  # =========================================================================
+  # Gold - Study Counts
+  # =========================================================================
+  - name: dim_study
+    description: "Tabla gold con conteos de condiciones, instalaciones e intervenciones por estudio."
+    columns:
+      - name: nct_id
+        description: "ID del estudio clínico."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+      - name: condition_count
+        description: "Número de condiciones asociadas al estudio."
+      - name: facility_count
+        description: "Número de instalaciones asociadas al estudio."
+      - name: intervention_count
+        description: "Número de intervenciones asociadas al estudio."
+      - name: ingestion_date
+        description: "Fecha de carga de los datos."
+
+
+  # =========================================================================
+  # Gold - Reported Events Incremental
+  # =========================================================================
+  - name: fct_adverse_events
+    description: "Tabla incremental de eventos reportados por estudio clínico."
+    columns:
+      - name: id_reported_events
+        description: "ID del evento reportado."
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        description: "ID del estudio clínico."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+      - name: organ_system_id
+        description: "FK al sistema de órganos."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_organ_system')
+                field: organ_system_id
+      - name: adverse_event_term_id
+        description: "FK al término de evento adverso."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_adverse_event_term')
+                field: adverse_event_term_id
+      - name: ctgov_group_code_id
+        description: "FK al código de grupo CTGOV."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_ctgov_group')
+                field: ctgov_group_code_id
+      - name: subjects_affected
+        description: "Número de sujetos afectados."
+      - name: subjects_at_risk
+        description: "Número de sujetos en riesgo."
+      - name: event_count
+        description: "Número total de eventos reportados."
+
+
+  # =========================================================================
+  # Gold - Drop Withdrawals Incremental
+  # =========================================================================
+  - name: fct_dropout_withdrawals
+    description: "Tabla incremental de retiros/drop-outs en los estudios."
+    columns:
+      - name: id_drop_withdrawals
+        description: "ID único de retiro/drop."
+        tests:
+          - not_null
+          - unique
+      - name: nct_id
+        description: "ID del estudio clínico."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+      - name: result_group_id
+        description: "FK al grupo de resultados."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_result_group')
+                field: result_group_id
+      - name: ctgov_group_code_id
+        description: "FK al código de grupo CTGOV."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_ctgov_group')
+                field: ctgov_group_code_id
+      - name: period_id
+        description: "FK al período de reporte."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_period')
+                field: period_id
+      - name: reason_id
+        description: "FK a la razón del retiro."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_reason')
+                field: reason_id
+      - name: withdrawal_count
+        description: "Número de retiros/reportados."
+
+# =========================================================================
+  # Gold - Facility Enrollment Fact
+  # =========================================================================
+  - name: fct_facility_enrollment
+    description: "Tabla de hechos de enrolamiento de pacientes por instalación."
+    columns:
+      - name: id_facilities
+        description: "FK a la instalación."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_facilities')
+                field: id_facilities
+      - name: nct_id
+        description: "ID del estudio clínico."
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_aact_design_group')
+                field: nct_id
+      - name: status_id
+        description: "FK al estado de la instalación."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_status')
+                field: status_id
+      - name: country_id
+        description: "FK al país de la instalación."
+        tests:
+          - relationships:
+              arguments:
+                to: ref('stg_aact_country')
+                field: country_id
