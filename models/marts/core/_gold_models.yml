@@ -2,6 +2,8 @@ version: 2
 
 models:
 
+  - name: dim_date
+    description: "Dimensión de fechas generada con la macro dbt_date"
   # =========================================================================
   # Gold - Conditions
   # =========================================================================
@@ -189,7 +191,8 @@ models:
   # =========================================================================
   - name: fct_adverse_events
     config:
-      always_create_constraint: true
+      meta:
+        always_create_constraint: true
     description: "Tabla incremental de eventos reportados por estudio clínico."
     columns:
       - name: id_reported_events
@@ -304,5 +307,4 @@ models:
 
       - name: sources
         description: "Lista de fuentes que aportan esta enfermedad (seer, aact, both)."
-
 
