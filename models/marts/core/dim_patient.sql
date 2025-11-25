@@ -9,5 +9,6 @@ select
     age_recode,
     year_of_diagnosis,
     survival_months,
+    md5(lower(trim(ps.primary_site_description))) as disease_id,
     ingestion_date
 from {{ ref('stg_seer_patient') }};
