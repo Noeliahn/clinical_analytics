@@ -43,7 +43,7 @@ select
 from base b
 left join condition_count c on b.nct_id = c.nct_id
 left join facility_count f on b.nct_id = f.nct_id
-left join intervention_count i on b.nct_id = i.nct_id;
+left join intervention_count i on b.nct_id = i.nct_id
 
 
 

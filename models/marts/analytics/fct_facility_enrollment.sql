@@ -5,4 +5,4 @@ select
     nct_id,
     status_id,
     country_id
-from {{ ref('stg_aact_facilities') }};
+from {{ ref('stg_aact_facilities') }}

@@ -8,8 +8,10 @@ renamed_casted AS (
         id_reported_events
         , nct_id
         , agency_class_id
+        , agency_class
         , lead_or_collaborator_id
-        , name::VARCHAR(256)                                                
+        , lead_or_collaborator
+        , sponsor_name                                                
 
 
     FROM sponsors

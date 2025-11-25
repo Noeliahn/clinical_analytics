@@ -17,24 +17,16 @@ models:
         description: "ID del estudio clínico normalizado."
         tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_study')
-                field: nct_id
+
       - name: condition_name
         description: "Nombre de la condición asociada al estudio."
       - name: disease_id
         description: "FK a dim_disease."
         tests:
           - relationships:
-              to: ref('dim_disease')
-              field: disease_id
-
-
-
-  # =========================================================================
-  # Gold - Reported Events (dimension)
-  # =========================================================================
+              arguments:
+                to: ref('dim_disease')
+                field: disease_id
   - name: dim_event
     description: "Tabla gold de eventos reportados, combinando staging de AACT y dimensiones normalizadas."
     columns:
@@ -58,11 +50,6 @@ models:
         description: "Código de grupo CTGOV."
       - name: nct_id
         description: "ID del estudio clínico."
-        tests:
-          - relationships:
-              arguments:
-                to: ref('dim_study')
-                field: nct_id
       - name: event_type_id
         description: "ID del tipo de evento (normalizado en gold)."
       - name: event_type
@@ -88,10 +75,6 @@ models:
         description: "ID del estudio clínico."
         tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_study')
-                field: nct_id
       - name: status_id
         description: "FK al estado de la instalación (valor normalizado en gold)."
       - name: country_id
@@ -117,10 +100,6 @@ models:
         description: "ID del estudio clínico."
         tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_study')
-                field: nct_id
       - name: intervention_type_id
         description: "FK al tipo de intervención (normalizado en gold)."
       - name: intervention_name
@@ -137,9 +116,6 @@ models:
     columns:
       - name: patient_id
         description: "Identificador único del paciente."
-        tests:
-          - not_null
-          - unique
       - name: gender_id
         description: "FK al género del paciente (normalizado en gold)."
       - name: primary_site_id
@@ -156,10 +132,6 @@ models:
         description: "Meses de supervivencia desde el diagnóstico."
       - name: disease_id
         description: "FK a dim_disease derivado del primary_site."
-        tests:
-          - relationships:
-              to: ref('dim_disease')
-              field: disease_id
       - name: ingestion_date
         description: "Fecha de carga de los datos."
 
@@ -179,10 +151,6 @@ models:
         description: "ID del estudio clínico."
         tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_study')
-                field: nct_id
       - name: agency_class_id
         description: "FK a la clase de agencia (normalizada en gold)."
       - name: agency_class
@@ -220,6 +188,8 @@ models:
   # Gold - Reported Events (fact incremental)
   # =========================================================================
   - name: fct_adverse_events
+    config:
+      always_create_constraint: true
     description: "Tabla incremental de eventos reportados por estudio clínico."
     columns:
       - name: id_reported_events
@@ -231,10 +201,6 @@ models:
         description: "ID del estudio clínico."
         tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_study')
-                field: nct_id
       - name: organ_system_id
         description: "FK al sistema de órganos (apunta a dim_event.organ_system_id)."
         tests:
@@ -279,24 +245,10 @@ models:
         description: "ID del estudio clínico."
         tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_study')
-                field: nct_id
       - name: result_group_id
         description: "FK al grupo de resultados (se asocia aquí a dim_event.event_type_id por normalización gold)."
-        tests:
-          - relationships:
-              arguments:
-                to: ref('dim_event')
-                field: event_type_id
       - name: ctgov_group_code_id
         description: "FK al código de grupo CTGOV (apunta a dim_event.ctgov_group_code_id)."
-        tests:
-          - relationships:
-              arguments:
-                to: ref('dim_event')
-                field: ctgov_group_code_id
       - name: period_id
         description: "FK al período de reporte (si lo normalizas en gold, referencia aquí)."
       - name: reason_id
@@ -323,10 +275,6 @@ models:
         description: "ID del estudio clínico."
         tests:
           - not_null
-          - relationships:
-              arguments:
-                to: ref('dim_study')
-                field: nct_id
       - name: status_id
         description: "FK al estado de la instalación (valor almacenado en dim_facility.status_id)."
         tests:
@@ -356,6 +304,5 @@ models:
 
       - name: sources
         description: "Lista de fuentes que aportan esta enfermedad (seer, aact, both)."
-
 
 

@@ -1,4 +1,6 @@
 packages:
   - package: dbt-labs/codegen
     version: 0.13.1
- 
+
+  - package: Snowflake-Labs/dbt_constraints
+    version: 1.0.6

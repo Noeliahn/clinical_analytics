@@ -8,7 +8,7 @@ with aact_conditions as (
 
 seer_primary_sites as (
     select distinct
-        lower(trim(primary_site_description)) as disease_name,
+        lower(trim(primary_site)) as disease_name,
         'seer' as source
     from {{ ref('stg_seer_primary_site') }}
 ),
@@ -33,4 +33,4 @@ select
     disease_name as disease_name_normalized,
     sources,
     current_timestamp as ingestion_date
-from aggregated;
+from aggregated

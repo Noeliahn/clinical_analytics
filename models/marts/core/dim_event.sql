@@ -27,4 +27,4 @@ left join {{ ref('stg_aact_ctgov_group') }} cgc
 left join {{ ref('stg_aact_event_type') }} et 
     on e.result_group_id is not null  
 left join {{ ref('stg_aact_classification') }} cl 
-    on e.result_group_id is not null;
+    on e.result_group_id is not null

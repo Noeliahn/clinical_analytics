@@ -7,4 +7,4 @@ select distinct
     country_id,
     latitude,
     longitude
-from {{ ref('stg_aact_facilities') }};
+from {{ ref('stg_aact_facilities') }}

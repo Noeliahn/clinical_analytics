@@ -12,4 +12,4 @@ from {{ ref('stg_aact_drop_withdrawals') }}
 
 -- {% if is_incremental() %}
 -- where updated_at > (select max(updated_at) from {{ this }})
--- {% endif %};
+-- {% endif %}
