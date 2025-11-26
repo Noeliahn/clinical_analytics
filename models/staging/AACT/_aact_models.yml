@@ -375,6 +375,7 @@ models:
         description: "Hashed identifier for facility country."
         tests:
           - not_null
+
           - relationships:
               arguments:
                 to: ref('country')
@@ -461,6 +462,7 @@ models:
         description: "Country name."
         tests:
           - not_null
+          - when_country_is_null_or_empty_country_should_be_unknown
 
 
   # -------------------------------------------------------------------------

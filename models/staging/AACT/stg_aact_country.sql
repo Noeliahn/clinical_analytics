@@ -6,8 +6,8 @@ WITH stg_country AS (
 renamed_casted AS (
     SELECT DISTINCT
     MD5(country) AS country_id
-    --, country
-    , coalesce(upper(country), 'UNKNOWN') 
+    , country
+
         
     FROM stg_country
 
