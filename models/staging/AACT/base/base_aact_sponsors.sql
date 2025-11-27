@@ -19,7 +19,7 @@ renamed_casted AS (
         ELSE MD5(lead_or_collaborator)
     END)::VARCHAR(256)                                                              AS lead_or_collaborator_id
         , lead_or_collaborator::VARCHAR(256)                                        AS lead_or_collaborator
-        , name::VARCHAR(256)                                                        AS name
+        , name::VARCHAR(256)                                                        AS sponsor_name
 
 
     FROM sponsors

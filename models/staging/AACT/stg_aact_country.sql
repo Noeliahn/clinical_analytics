@@ -7,6 +7,7 @@ renamed_casted AS (
     SELECT DISTINCT
     MD5(country) AS country_id
     , country
+
         
     FROM stg_country
 

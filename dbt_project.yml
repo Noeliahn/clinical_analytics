@@ -46,18 +46,19 @@ models:
         seer:
           +schema: seer
 
-    +meta:
-      marts:
-        +materialized: table
-        +database: "clinical_analytics_gold_db"
-        core:
-          +schema: core
+    marts:
+      +materialized: table
+      +database: "CLINICAL_ANALYTICS_GOLD_DB"
+      core:
+        +schema: core
+      analytics:
+        +schema: analytics
 # seeds:
 #  +schema: seed_data
 #  +database: "clinical_analytics_bronze_db"
-#snapshots:
-#  +transient: false
-#  +target_database: "clinical_analytics_silver_db"
-#  +target_schema: snapshots
+snapshots:
+  +transient: false
+  +target_database: "CLINICAL_ANALYTICS_SILVER_DB"
+  +target_schema: snapshots
 flags:
   require_generic_test_arguments_property: true

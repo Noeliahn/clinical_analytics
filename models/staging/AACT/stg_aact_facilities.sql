@@ -10,6 +10,7 @@ renamed_casted AS (
     , status_id
     , name
     , country_id
+    , country
     , latitude
     , longitude
 

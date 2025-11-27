@@ -19,7 +19,18 @@ renamed_casted AS (
         , age_recode::VARCHAR(256)                AS age_recode
         , CURRENT_TIMESTAMP()                     AS ingestion_date
     FROM src_seer
+),
+
+
+deduped AS (
+    SELECT *,
+        ROW_NUMBER() OVER (
+            PARTITION BY patient_id 
+            ORDER BY ingestion_date DESC, survival_months DESC
+        ) as rn
+    FROM renamed_casted
 )
 
 SELECT * 
-FROM renamed_casted
+FROM deduped
+WHERE rn = 1 
