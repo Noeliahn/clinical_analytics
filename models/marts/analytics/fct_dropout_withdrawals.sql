@@ -1,5 +1,5 @@
 -- {{ config(materialized='incremental', unique_key='id_drop_withdrawals') }}
-
+-- fct_dropout_withdrawals
 select
     id_drop_withdrawals,
     nct_id,

@@ -1,5 +1,5 @@
 -- {{ config(materialized='table') }}
-
+-- fct_facility_enrollment
 select
     id_facilities,
     nct_id,

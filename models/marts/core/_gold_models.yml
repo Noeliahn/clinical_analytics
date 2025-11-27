@@ -308,3 +308,27 @@ models:
       - name: sources
         description: "Lista de fuentes que aportan esta enfermedad (seer, aact, both)."
 
+  # =========================================================================
+  # Gold - dim_disease fct_patient_survival_analysis
+  # =========================================================================
+
+  - name: fct_patient_survival_analysis
+    description: "Análisis de supervivencia de pacientes oncológicos"
+    columns:
+      - name: patient_id
+        tests: [not_null, unique]
+      - name: survival_months
+        tests: [not_null, positive_values]
+      - name: survival_category
+        tests: 
+          - accepted_values:
+              values: ['<1 año', '1-5 años', '5+ años']
+
+  # =========================================================================
+  # Gold - agg_cancer_incidence_trends
+  # =========================================================================
+  - name: agg_cancer_incidence_trends  
+    description: "Tendencias de incidencia de cáncer"
+    columns:
+      - name: mortality_rate_percent
+        tests: [not_null]

@@ -1,0 +1,66 @@
+-- VERSIÓN SIMPLIFICADA Y FUNCIONAL
+WITH patient_base AS (
+  SELECT 
+    patient_id,
+    primary_site as cancer_type,
+    year_of_diagnosis,
+    gender,
+    age_recode,
+    survival_months,
+    vital_status
+  FROM {{ ref('dim_patient') }}
+  WHERE vital_status = 'Alive'
+    AND survival_months > 0
+    AND year_of_diagnosis >= 2010
+),
+
+trial_conditions AS (
+  SELECT DISTINCT
+    nct_id,
+    LOWER(TRIM(condition_name)) as condition_name
+  FROM {{ ref('stg_aact_conditions') }}
+),
+
+matching_scores AS (
+  SELECT 
+    p.patient_id,
+    p.cancer_type,
+    t.nct_id,
+    t.condition_name,
+    
+    -- Puntuación de matching simplificada pero funcional
+    CASE 
+      WHEN LOWER(p.cancer_type) = t.condition_name THEN 0.9
+      WHEN t.condition_name LIKE '%' || LOWER(p.cancer_type) || '%' THEN 0.7
+      ELSE 0.2
+    END as match_score,
+    
+    -- Criterios básicos de elegibilidad
+    CASE WHEN p.survival_months > 12 THEN 1 ELSE 0 END as has_minimal_survival
+    
+  FROM patient_base p
+  CROSS JOIN trial_conditions t
+  WHERE p.cancer_type IS NOT NULL
+    AND t.condition_name IS NOT NULL
+)
+
+SELECT 
+  patient_id,
+  nct_id,
+  cancer_type as patient_cancer_type,
+  condition_name as trial_condition,
+  match_score,
+  has_minimal_survival,
+  
+  CASE 
+    WHEN match_score >= 0.7 AND has_minimal_survival = 1 THEN 'HIGH_MATCH'
+    WHEN match_score >= 0.3 AND has_minimal_survival = 1 THEN 'MEDIUM_MATCH'
+    ELSE 'LOW_MATCH'
+  END as match_category,
+  
+  -- Metadata
+  CURRENT_TIMESTAMP as calculated_at
+
+FROM matching_scores
+WHERE match_score > 0.1
+  AND has_minimal_survival = 1

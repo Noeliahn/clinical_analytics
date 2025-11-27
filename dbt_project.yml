@@ -46,14 +46,13 @@ models:
         seer:
           +schema: seer
 
-    +meta:
-      marts:
-        +materialized: table
-        +database: "CLINICAL_ANALYTICS_GOLD_DB"
-        core:
-          +schema: core
-        analytics:
-          +schema: analytics
+    marts:
+      +materialized: table
+      +database: "CLINICAL_ANALYTICS_GOLD_DB"
+      core:
+        +schema: core
+      analytics:
+        +schema: analytics
 # seeds:
 #  +schema: seed_data
 #  +database: "clinical_analytics_bronze_db"

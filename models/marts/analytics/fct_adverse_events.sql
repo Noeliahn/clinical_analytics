@@ -1,5 +1,5 @@
 -- {{ config(materialized='incremental', unique_key='id_reported_events') }}
-
+-- fct_adverse_events
 select
     id_reported_events,
     nct_id,
